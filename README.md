@@ -4,9 +4,11 @@ an obsidian plugin to enhance the workspace
 
 ## features
 
-### `open panes` view that lists all open panes 
+### `open panes` view (vertical tabs)
 
 This is a tab on the left side-bar that lists all the panes open in the main area.
+
+This works a little like vertical tabs (in vivaldi and edge browsers)
 
 It is useful when using obsidian in ways that some open panes are hidden from view.
 
