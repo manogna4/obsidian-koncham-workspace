@@ -1,16 +1,33 @@
 # koncham workspace
 
-obsidian plugin to manipulate the workspace
-
-search for `koncham workspace` in the command palette to look for all features
-
+an obsidian plugin to enhance the workspace
 
 ## features
 
-+ pin/unpin all leaves
-+ reveal workspace-tabs (tag-panel, backlinks, outline, etc.)
-+ reveal some plugin tabs (recent-files, calendar, etc.)
+### `open panes` view that lists all open panes 
+
+This is a tab on the left side-bar that lists all the panes open in the main area.
+
+It is useful when using obsidian in ways that some open panes are hidden from view.
+
+examples of such modes include:
++ sliding-panes
++ maximize active pane
+
+![root leaves in action](media/root-leaves-in-action.gif)
+
+
+### pin/unpin all leaves
+
+This is useful when you want to force every new note to open in it's own pane
+
 
 ## features planned
 
-+ activate functions on workspace-tabs (search: toggle-collapse-results, etc)
++ more functionality in `open panes` view through right click
++ rearrange panes in alphabetical order
++ pane arrangements such as (1+1), (1+2) using commands
+
+## known issues
+
++ [ ]  `open panes` does not refresh properly on deleting a file. To get it to refresh change focus to a different pane
