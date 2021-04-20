@@ -1,8 +1,10 @@
-import {Plugin} from 'obsidian';
+import {Plugin, ItemView, WorkspaceLeaf, Menu} from 'obsidian';
 
 const plugin_name = 'koncham-workspace'
+const view_type = 'root-leaves-list'
 
-export default class MyPlugin extends Plugin {
+export default class konchamWorkspace extends Plugin {
+	public view: RootLeavesListView;
 
 	async onunload() {
 		console.log('unloading plugin: ' + plugin_name);
@@ -10,6 +12,21 @@ export default class MyPlugin extends Plugin {
 
 	async onload() {
 		console.log('loading plugin: ' + plugin_name);
+
+		this.registerView(
+			view_type,
+			(leaf) => (this.view = new RootLeavesListView(leaf, this))
+		);
+
+		this.registerEvent(this.app.workspace.on('active-leaf-change', this.handleChange));
+		this.registerEvent(this.app.workspace.on('layout-change', this.handleChange));
+		this.registerEvent(this.app.vault.on('rename', this.handleChange));
+
+		if (this.app.workspace.layoutReady) {
+			this.initView();
+		} else {
+			this.registerEvent(this.app.workspace.on('layout-ready', this.initView));
+		}
 
 		this.addCommand({
 			id: 'leaves-pin-on',
@@ -24,54 +41,23 @@ export default class MyPlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'reveal-tag-pane',
-			name: 'reveal tag pane',
-			callback: () => this.revealTagPane(),
-		});
-
-		this.addCommand({
-			id: 'reveal-recent-files',
-			name: 'reveal recent files',
-			callback: () => this.revealRecentFiles(),
-		});
-
-		this.addCommand({
-			id: 'reveal-starred',
-			name: 'reveal starred',
-			callback: () => this.revealStarred(),
-		});
-
-		this.addCommand({
-			id: 'reveal-backlinks',
-			name: 'reveal backlinks',
-			callback: () => this.revealBacklinks(),
-		});
-
-		this.addCommand({
-			id: 'reveal-outline',
-			name: 'reveal outline',
-			callback: () => this.revealOutline(),
-		});
-
-		this.addCommand({
-			id: 'reveal-search',
-			name: 'reveal file search',
-			callback: () => this.revealSearch(),
-		});
-
-		this.addCommand({
-			id: 'reveal-file-explorer',
-			name: 'reveal file explorer',
-			callback: () => this.revealFileExplorer(),
-		});
-
-		this.addCommand({
-			id: 'reveal-calendar',
-			name: 'reveal calendar',
-			callback: () => this.revealCalendar(),
+			id: 'show-leaves-list',
+			name: 'show leaves list',
+			hotkeys: [{ "modifiers": [], "key": "F23" }],
+			callback: () => this.showRootLeavesList(),
 		});
 
 	}
+
+	private readonly initView = (): void => {
+		if (this.app.workspace.getLeavesOfType(view_type).length) {
+			return;
+		}
+		this.app.workspace.getLeftLeaf(false).setViewState({
+			type: view_type,
+			active: true,
+		});
+	};
 
 	leavesPinOn(){
 		this.app.workspace.iterateRootLeaves((leaf: any) => {
@@ -85,73 +71,77 @@ export default class MyPlugin extends Plugin {
 		});
 	}
 
-	revealTagPane(){
+	showRootLeavesList() {
 		this.app.workspace.iterateAllLeaves((leaf: any) => {
-			if (leaf.getDisplayText() == "Tag pane"){
+			if (leaf.getViewState()['type'] == view_type) {
 				this.app.workspace.revealLeaf(leaf);
 			}
 		});
 	}
 
-	revealRecentFiles() {
-		this.app.workspace.iterateAllLeaves((leaf: any) => {
-			if (leaf.getDisplayText() == "Recent Files") {
-				this.app.workspace.revealLeaf(leaf);
+	private readonly handleChange = async () => {
+		this.view.initialize();
+	}
+
+}
+
+
+class RootLeavesListView extends ItemView {
+	private readonly plugin: konchamWorkspace
+
+	constructor(
+		leaf: WorkspaceLeaf,
+		plugin: konchamWorkspace,
+	) {
+		super(leaf);
+
+		this.plugin = plugin;
+		this.initialize();
+	}
+
+	public readonly initialize = (): void => {
+		let leaf_active = this.app.workspace.activeLeaf;
+		const rootEl = createDiv({ cls: 'nav-folder mod-root' });
+		const childrenEl = rootEl.createDiv({ cls: 'nav-folder-children' });
+		this.app.workspace.iterateRootLeaves((leaf: any) => {
+			const navFile = childrenEl.createDiv({ cls: 'nav-file' });
+			const navFileTitle = navFile.createDiv({ cls: 'nav-file-title' });
+
+			if (leaf === leaf_active) {
+				navFileTitle.addClass('is-active');
 			}
+
+			navFileTitle.createDiv({
+				cls: 'nav-file-title-content',
+				text: leaf.getDisplayText(),
+			});
+			const contentEl = this.containerEl.children[1];
+			contentEl.empty();
+			contentEl.appendChild(rootEl);
 		});
 	}
 
-	revealStarred() {
-		this.app.workspace.iterateAllLeaves((leaf: any) => {
-			if (leaf.getDisplayText() == "Starred") {
-				this.app.workspace.revealLeaf(leaf);
-			}
-		});
+	public getViewType(): string {
+		return view_type;
 	}
 
-	revealSearch() {
-		this.app.workspace.iterateAllLeaves((leaf: any) => {
-			if (leaf.getDisplayText() == "Search") {
-				this.app.workspace.revealLeaf(leaf);
-			}
-		});
+	public getDisplayText(): string {
+		return 'Root Leaves';
 	}
 
-	revealFileExplorer() {
-		this.app.workspace.iterateAllLeaves((leaf: any) => {
-			if (leaf.getDisplayText() == "File explorer") {
-				this.app.workspace.revealLeaf(leaf);
-			}
-		});
+	public getIcon(): string {
+		return 'double-down-arrow-glyph';
 	}
 
-	revealBacklinks() {
-		let note_curr = this.app.workspace.activeLeaf.getDisplayText();
-		this.app.workspace.iterateAllLeaves((leaf: any) => {
-			if (leaf.getDisplayText() == "Backlinks for " + note_curr) {
-				this.app.workspace.revealLeaf(leaf);
-			}
-		});
+	public onHeaderMenu(menu: Menu): void {
+		menu
+			.addItem((item) => {
+				item
+					.setTitle('close')
+					.setIcon('cross')
+					.onClick(() => {
+						this.app.workspace.detachLeavesOfType(view_type);
+					});
+			});
 	}
-
-	revealOutline() {
-		let note_curr = this.app.workspace.activeLeaf.getDisplayText();
-		this.app.workspace.iterateAllLeaves((leaf: any) => {
-			if (leaf.getDisplayText() == "Outline of " + note_curr) {
-				this.app.workspace.revealLeaf(leaf);
-			}
-		});
-	}
-
-	revealCalendar() {
-		let note_curr = this.app.workspace.activeLeaf.getDisplayText();
-		this.app.workspace.iterateAllLeaves((leaf: any) => {
-			if (leaf.getDisplayText() == "Calendar") {
-				this.app.workspace.revealLeaf(leaf);
-			}
-		});
-	}
-
-	
-
 }
