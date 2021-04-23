@@ -2,6 +2,7 @@ import {Plugin, ItemView, WorkspaceLeaf, Menu} from 'obsidian';
 
 const plugin_name = 'koncham-workspace'
 const view_type = 'root-leaves'
+const view_name = 'Open Panes'
 
 export default class konchamWorkspace extends Plugin {
 	public view: RootLeavesListView;
@@ -46,6 +47,12 @@ export default class konchamWorkspace extends Plugin {
 			id: 'show-root-leaves-view',
 			name: 'show open-panes',
 			callback: () => this.showRootLeavesView(),
+		});
+
+		this.addCommand({
+			id: 'handle-change',
+			name: 'refresh Open Panes',
+			callback: () => this.handleChange(),
 		});
 
 	}
@@ -95,7 +102,7 @@ export default class konchamWorkspace extends Plugin {
 	}
 
 	private readonly handleDelete = async () => {
-		console.log('delete');
+		// console.log(plugin_name + ': delete event detected');
 		this.view.initialize();
 	}
 
@@ -118,7 +125,7 @@ class RootLeavesListView extends ItemView {
 
 	public readonly initialize = (): void => {
 		let leaf_active = this.app.workspace.activeLeaf;
-		const rootEl = createDiv({ cls: 'nav-folder mod-root' });
+		const rootEl = createDiv({ cls: 'nav-folder mod-root koncham-workspace' });
 		const childrenEl = rootEl.createDiv({ cls: 'nav-folder-children' });
 		let n = 1
 		this.app.workspace.iterateRootLeaves((leaf: any) => {
@@ -160,7 +167,7 @@ class RootLeavesListView extends ItemView {
 	}
 
 	public getDisplayText(): string {
-		return 'Open Panes';
+		return view_name;
 	}
 
 	public getIcon(): string {
