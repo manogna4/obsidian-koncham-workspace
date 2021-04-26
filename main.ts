@@ -35,6 +35,12 @@ export default class konchamWorkspace extends Plugin {
 			callback: () => this.showRootLeavesView(),
 		});
 
+		this.addCommand({
+			id: 'initialize-view',
+			name: 'refresh open panes',
+			callback: () => this.initializeView(),
+		});
+
 	}
 
 	private readonly initializeView = (): void => {
@@ -97,6 +103,7 @@ class RootLeavesListView extends ItemView {
 		this.registerEvent(this.app.workspace.on('active-leaf-change', this.refreshView));
 		this.registerEvent(this.app.workspace.on('layout-change', this.refreshView));
 		this.registerEvent(this.app.workspace.on('layout-ready', this.refreshView));
+		// this.registerEvent(this.app.vault.on('delete', this.del));
 	}
 
 	public readonly refreshView = (): void => {
