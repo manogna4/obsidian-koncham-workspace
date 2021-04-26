@@ -5,7 +5,6 @@ const view_type = 'root-leaves'
 const view_name = 'Open Panes'
 
 export default class konchamWorkspace extends Plugin {
-	public view: RootLeavesListView;
 
 	async onunload() {
 		console.log('unloading plugin: ' + plugin_name);
@@ -14,21 +13,9 @@ export default class konchamWorkspace extends Plugin {
 	async onload() {
 		console.log('loading plugin: ' + plugin_name);
 
-		// this.registerView(
-		// 	view_type,
-		// 	(leaf) => (this.view = new RootLeavesListView(leaf, this))
-		// );
-
 		this.registerView(view_type, (leaf) => (new RootLeavesListView(leaf, this)));
 		
-
-		// this.registerEvent(this.app.workspace.on('active-leaf-change', this.handleChange));
-		// this.registerEvent(this.app.workspace.on('layout-change', this.handleChange));
-		// this.registerEvent(this.app.workspace.on('layout-ready', this.handleChange));
-		// this.registerEvent(this.app.vault.on('delete', this.handleDelete));
-		// this.registerEvent(this.app.vault.on('rename', this.handleChange));
-
-		this.app.workspace.onLayoutReady(this.initView);
+		this.app.workspace.onLayoutReady(this.initializeView);
 
 		this.addCommand({
 			id: 'leaves-pin-on',
@@ -48,15 +35,9 @@ export default class konchamWorkspace extends Plugin {
 			callback: () => this.showRootLeavesView(),
 		});
 
-		// this.addCommand({
-		// 	id: 'handle-change',
-		// 	name: 'refresh Open Panes',
-		// 	callback: () => this.handleChange(),
-		// });
-
 	}
 
-	private readonly initView = (): void => {
+	private readonly initializeView = (): void => {
 		if (this.app.workspace.getLeavesOfType(view_type).length) {
 			return;
 		}
@@ -96,15 +77,6 @@ export default class konchamWorkspace extends Plugin {
 		});
 	}
 
-	// private readonly handleChange = async () => {
-	// 	this.view.initialize();
-	// }
-
-	// private readonly handleDelete = async () => {
-	// 	// console.log(plugin_name + ': delete event detected');
-	// 	this.view.initialize();
-	// }
-
 }
 
 // I've used large parts of the code from (recent-files plugin)[https://github.com/tgrosinger/recent-files-obsidian]
@@ -118,22 +90,16 @@ class RootLeavesListView extends ItemView {
 		super(leaf);
 
 		this.plugin = plugin;
-		this.initialize();
+		this.refreshView();
 	}
 
 	onload(){
-		console.log(view_name + ' loaded');
-
-		this.registerEvent(this.app.workspace.on('active-leaf-change', this.handleChange));
-		this.registerEvent(this.app.workspace.on('layout-change', this.handleChange));
-		this.registerEvent(this.app.workspace.on('layout-ready', this.handleChange));
+		this.registerEvent(this.app.workspace.on('active-leaf-change', this.refreshView));
+		this.registerEvent(this.app.workspace.on('layout-change', this.refreshView));
+		this.registerEvent(this.app.workspace.on('layout-ready', this.refreshView));
 	}
 
-	private readonly handleChange = async () => {
-		this.initialize();
-	}
-
-	public readonly initialize = (): void => {
+	public readonly refreshView = (): void => {
 		let leaf_active = this.app.workspace.activeLeaf;
 		const rootEl = createDiv({ cls: 'nav-folder mod-root koncham-workspace' });
 		const childrenEl = rootEl.createDiv({ cls: 'nav-folder-children' });
