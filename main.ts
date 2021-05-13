@@ -1,4 +1,4 @@
-import {Plugin, ItemView, WorkspaceLeaf, Menu} from 'obsidian';
+import {Plugin, ItemView, WorkspaceLeaf, Menu, Workspace} from 'obsidian';
 
 const plugin_name = 'koncham-workspace'
 const view_type = 'root-leaves'
@@ -73,19 +73,8 @@ export default class konchamWorkspace extends Plugin {
 		});
 	}
 
-	activateRootLeafbyNumber(n:number){
-		let counter = 1
-		this.app.workspace.iterateRootLeaves((leaf: WorkspaceLeaf) => {
-			if (counter == n){
-				this.app.workspace.setActiveLeaf(leaf, true, true);
-			}
-			counter += 1;
-		});
-	}
-
 }
 
-// I've used large parts of the code from (recent-files plugin)[https://github.com/tgrosinger/recent-files-obsidian]
 class RootLeavesListView extends ItemView {
 	private readonly plugin: konchamWorkspace
 
@@ -103,14 +92,12 @@ class RootLeavesListView extends ItemView {
 		this.registerEvent(this.app.workspace.on('active-leaf-change', this.refreshView));
 		this.registerEvent(this.app.workspace.on('layout-change', this.refreshView));
 		this.registerEvent(this.app.workspace.on('layout-ready', this.refreshView));
-		// this.registerEvent(this.app.vault.on('delete', this.del));
 	}
 
 	public readonly refreshView = (): void => {
 		let leaf_active = this.app.workspace.activeLeaf;
 		const rootEl = createDiv({ cls: 'nav-folder mod-root koncham-workspace' });
 		const childrenEl = rootEl.createDiv({ cls: 'nav-folder-children' });
-		let n = 1
 		this.app.workspace.iterateRootLeaves((leaf: WorkspaceLeaf) => {
 			const navFile = childrenEl.createDiv({ cls: 'nav-file' });
 			const navFileTitle = navFile.createDiv({ cls: 'nav-file-title' });
@@ -119,7 +106,7 @@ class RootLeavesListView extends ItemView {
 				navFileTitle.addClass('is-active');
 			}
 
-			let displaytext = leaf.getDisplayText() + " || " + leaf.view.getViewType()
+			let displaytext
 			if (leaf.view.getViewType() == "empty"){
 				displaytext = "[empty]"
 			} else {
@@ -130,18 +117,14 @@ class RootLeavesListView extends ItemView {
 				cls: 'nav-file-title-content',
 				text: displaytext,
 			});
-			navFileTitle.setAttr("data-nleaf", n)
+
 			const contentEl = this.containerEl.children[1];
 			contentEl.empty();
 			contentEl.appendChild(rootEl);
 
 			navFileTitle.onClickEvent(() => {
-				let nleaf = navFileTitle.getAttr('data-nleaf')
-				this.plugin.activateRootLeafbyNumber(parseInt(nleaf));
+				this.app.workspace.setActiveLeaf(leaf);
 			});
-			
-			
-			n += 1;
 		});
 	}
 
@@ -154,7 +137,7 @@ class RootLeavesListView extends ItemView {
 	}
 
 	public getIcon(): string {
-		return 'double-down-arrow-glyph';
+		return 'three-horizontal-bars';
 	}
 
 	public onHeaderMenu(menu: Menu): void {

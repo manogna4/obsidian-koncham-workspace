@@ -18,6 +18,7 @@ examples of such modes include:
 
 ![root leaves in action](media/root-leaves-in-action.gif)
 
+(sidebar header icon has been changed from double-downward-arrows to horizontal-bars)
 
 ### pin/unpin all leaves
 
@@ -32,4 +33,4 @@ This is useful when you want to force every new note to open in it's own pane
 
 ## known issues
 
-+ [ ]  `open panes` does not refresh properly on deleting a file. To get it to refresh change focus to a different pane
+-- none right now --
