@@ -4,7 +4,7 @@ const plugin_name = 'koncham-workspace'
 const view_type = 'root-leaves'
 const view_name = 'Open Panes'
 
-export default class konchamWorkspace extends Plugin {
+export default class KonchamWorkspace extends Plugin {
 
 	async onunload() {
 		console.log('unloading plugin: ' + plugin_name);
@@ -19,25 +19,25 @@ export default class konchamWorkspace extends Plugin {
 
 		this.addCommand({
 			id: 'leaves-pin-on',
-			name: 'pin all leaves',
+			name: 'Pin all leaves',
 			callback: () => this.leavesPinOn(),
 		});
 
 		this.addCommand({
 			id: 'leaves-pin-off',
-			name: 'unpin all leaves',
+			name: 'Unpin all leaves',
 			callback: () => this.leavesPinOff(),
 		});
 
 		this.addCommand({
 			id: 'show-root-leaves-view',
-			name: 'show open-panes',
+			name: 'Show open-panes',
 			callback: () => this.showRootLeavesView(),
 		});
 
 		this.addCommand({
-			id: 'initialize-view',
-			name: 'refresh open panes',
+			id: 'open-root-leaves-view',
+			name: 'Start open-panes',
 			callback: () => this.initializeView(),
 		});
 
@@ -49,7 +49,6 @@ export default class konchamWorkspace extends Plugin {
 		}
 		this.app.workspace.getLeftLeaf(false).setViewState({
 			type: view_type,
-			active: true,
 		});
 	};
 
@@ -76,11 +75,11 @@ export default class konchamWorkspace extends Plugin {
 }
 
 class RootLeavesListView extends ItemView {
-	private readonly plugin: konchamWorkspace
+	private readonly plugin: KonchamWorkspace
 
 	constructor(
 		leaf: WorkspaceLeaf,
-		plugin: konchamWorkspace,
+		plugin: KonchamWorkspace,
 	) {
 		super(leaf);
 
@@ -96,7 +95,9 @@ class RootLeavesListView extends ItemView {
 
 	public readonly refreshView = (): void => {
 		let leaf_active = this.app.workspace.activeLeaf;
-		const rootEl = createDiv({ cls: 'nav-folder mod-root koncham-workspace' });
+		const rootEl = createDiv({ cls: 'nav-folder mod-root koncham-workspace koncham-workspace-root-panes' });
+		this.contentEl.empty();
+		this.contentEl.appendChild(rootEl);
 		const childrenEl = rootEl.createDiv({ cls: 'nav-folder-children' });
 		this.app.workspace.iterateRootLeaves((leaf: WorkspaceLeaf) => {
 			const navFile = childrenEl.createDiv({ cls: 'nav-file' });
@@ -117,10 +118,6 @@ class RootLeavesListView extends ItemView {
 				cls: 'nav-file-title-content',
 				text: displaytext,
 			});
-
-			const contentEl = this.containerEl.children[1];
-			contentEl.empty();
-			contentEl.appendChild(rootEl);
 
 			navFileTitle.onClickEvent(() => {
 				this.app.workspace.setActiveLeaf(leaf);
