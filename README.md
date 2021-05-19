@@ -4,7 +4,7 @@ an obsidian plugin to enhance the workspace
 
 ## features
 
-### `open panes` view (vertical tabs)
+### `Center panes` tab on sidebar (vertical tabs)
 
 This is a tab on the left side-bar that lists all the panes open in the main area.
 
@@ -16,20 +16,23 @@ examples of such modes include:
 + sliding-panes
 + maximize active pane
 
-![root leaves in action](media/root-leaves-in-action.gif)
+This screen recording shows maximized notes:
 
-(sidebar header icon has been changed from double-downward-arrows to horizontal-bars)
+![center-panes in action](media/center-panes-in-action.gif)
 
-### pin/unpin all leaves
 
-This is useful when you want to force every new note to open in it's own pane
 
+### pin/unpin panes
+
+Pinning all panes forces every new note to open in it's own pane.
+When some external applications open a note in Obsidian, they switch away from the last active un-pinned pane. Pinning prevents losing your existing open notes.
 
 ## features planned
 
-+ more functionality in `open panes` view through right click
-+ rearrange panes in alphabetical order
++ more functionality in `center panes` view through right click
++ pane switcher
 + pane arrangements such as (1+1), (1+2) using commands
++ rearrange panes in alphabetical order
 
 ## known issues
 

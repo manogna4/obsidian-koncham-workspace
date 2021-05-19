@@ -1,8 +1,8 @@
-import {Plugin, ItemView, WorkspaceLeaf, Menu, Workspace} from 'obsidian';
+import {Plugin, ItemView, WorkspaceLeaf, Menu} from 'obsidian';
 
 const plugin_name = 'koncham-workspace'
-const view_type = 'root-leaves'
-const view_name = 'Open Panes'
+const view_type = 'center-panes'
+const view_name = 'Center Panes'
 
 export default class KonchamWorkspace extends Plugin {
 
@@ -15,35 +15,35 @@ export default class KonchamWorkspace extends Plugin {
 
 		this.registerView(view_type, (leaf) => (new RootLeavesListView(leaf, this)));
 		
-		this.app.workspace.onLayoutReady(this.initializeView);
+		this.app.workspace.onLayoutReady(this.initializeRootLeavesView);
 
 		this.addCommand({
 			id: 'leaves-pin-on',
-			name: 'Pin all leaves',
+			name: 'Pin all panes',
 			callback: () => this.leavesPinOn(),
 		});
 
 		this.addCommand({
 			id: 'leaves-pin-off',
-			name: 'Unpin all leaves',
+			name: 'Unpin all panes',
 			callback: () => this.leavesPinOff(),
 		});
 
 		this.addCommand({
-			id: 'show-root-leaves-view',
-			name: 'Show open-panes',
+			id: 'show-center-panes-view',
+			name: 'Show center-panes',
 			callback: () => this.showRootLeavesView(),
 		});
 
 		this.addCommand({
-			id: 'open-root-leaves-view',
-			name: 'Start open-panes',
-			callback: () => this.initializeView(),
+			id: 'open-center-panes-view',
+			name: 'Reopen center-panes',
+			callback: () => this.initializeRootLeavesView(),
 		});
 
 	}
 
-	private readonly initializeView = (): void => {
+	private readonly initializeRootLeavesView = (): void => {
 		if (this.app.workspace.getLeavesOfType(view_type).length) {
 			return;
 		}
