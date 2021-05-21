@@ -22,6 +22,8 @@ This screen recording shows maximized notes:
 
 ![center-panes in action](https://github.com/manogna4/obsidian-koncham-workspace/blob/main/media/center-panes-in-action.gif)
 
+https://github.com/manogna4/obsidian-koncham-workspace/blob/main/media/center-panes-in-action.gif?raw=true
+
 ### pin/unpin panes
 
 Pinning all panes forces every new note to open in it's own pane.
