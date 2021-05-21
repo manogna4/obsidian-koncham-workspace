@@ -18,7 +18,7 @@ examples of such modes include:
 
 This screen recording shows maximized notes:
 
-![center-panes in action](media/center-panes-in-action.gif)
+<!-- ![center-panes in action](media/center-panes-in-action.gif) -->
 
 ![center-panes in action](https://github.com/manogna4/obsidian-koncham-workspace/blob/main/media/center-panes-in-action.gif)
 
