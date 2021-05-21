@@ -20,9 +20,7 @@ This screen recording shows maximized notes:
 
 <!-- ![center-panes in action](media/center-panes-in-action.gif) -->
 
-![center-panes in action](https://github.com/manogna4/obsidian-koncham-workspace/blob/main/media/center-panes-in-action.gif)
-
-https://github.com/manogna4/obsidian-koncham-workspace/blob/main/media/center-panes-in-action.gif?raw=true
+![center-panes in action](https://raw.githubusercontent.com//manogna4/obsidian-koncham-workspace/blob/main/media/center-panes-in-action.gif)
 
 ### pin/unpin panes
 
