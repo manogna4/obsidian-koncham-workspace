@@ -1,8 +1,13 @@
-import {Plugin, ItemView, WorkspaceLeaf, Menu} from 'obsidian';
+import {Plugin, ItemView, WorkspaceLeaf, Menu, FuzzySuggestModal} from 'obsidian';
 
 const plugin_name = 'koncham-workspace'
 const view_type = 'center-panes'
 const view_name = 'Center Panes'
+
+interface leafItem {
+	type: string;
+	title: string;
+}
 
 export default class KonchamWorkspace extends Plugin {
 
@@ -103,8 +108,13 @@ class RootLeavesListView extends ItemView {
 			const navFile = childrenEl.createDiv({ cls: 'nav-file' });
 			const navFileTitle = navFile.createDiv({ cls: 'nav-file-title' });
 
+			
 			if (leaf === leaf_active) {
 				navFileTitle.addClass('is-active');
+			}
+
+			if (leaf.pinned) {
+				navFileTitle.addClass('is-pinned');
 			}
 
 			let displaytext
@@ -120,7 +130,7 @@ class RootLeavesListView extends ItemView {
 			});
 
 			navFileTitle.onClickEvent(() => {
-				this.app.workspace.setActiveLeaf(leaf);
+				this.app.workspace.setActiveLeaf(leaf, true, true);
 			});
 		});
 	}
@@ -163,5 +173,32 @@ class RootLeavesListView extends ItemView {
 						this.plugin.leavesPinOff();
 					});
 			})
+	}
+}
+
+class leafSwitchModal extends FuzzySuggestModal<leafItem> {
+	app: App;
+	items: leafItem[];
+	
+	constructor(app: App, items: leafItem[]) {
+		super(app);
+		this.app = app;
+		this.items = items;
+	}
+
+	getItems(): leafItem[] {
+		return this.items;
+	}
+
+	getItemText(item: leafItem): string {
+		return item.rung + " -- " + item.title;
+	}
+
+	onChooseItem(item: leafItem, evt: MouseEvent | KeyboardEvent): void {
+		let view = this.app.workspace.activeLeaf.view
+		if (view instanceof MarkdownView) {
+			let editor = view.editor
+			editor.setSelection({ line: item.line, ch: item.start + 1 })
+		}
 	}
 }

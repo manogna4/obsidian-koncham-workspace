@@ -2,3 +2,7 @@
     padding-left: 2px;
     padding-right: 2px;
 }
+
+.is-pinned {
+    color: red !important;
+}
